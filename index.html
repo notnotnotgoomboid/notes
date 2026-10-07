@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loading…</title>
+<style>
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: grid;
+    place-items: center;
+    background: #f1f3f4;
+    color: #3c4043;
+    font: 16px/1.4 system-ui, sans-serif;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<p id="msg">Click anywhere to continue</p>
+
+<script>
+// ---- CHANGE THESE ----
+const TARGET = "https://eaglercraft.q13x.com/1.8.8_2/js/"; // site or game to load
+const TAB_TITLE = "Google Docs";
+const TAB_ICON = "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico"; // "" for no icon
+// Optional: send THIS tab somewhere else after launching (leave "" to keep it as is)
+const REDIRECT_THIS_TAB_TO = "";
+// ----------------------
+
+let cloak = null;
+
+function launch() {
+  // Don't open a second tab if the first is still open
+  if (cloak && !cloak.closed) return;
+
+  cloak = window.open("about:blank", "_blank");
+  if (!cloak) return; // popup blocked; the next click will try again
+
+  const doc = cloak.document;
+  doc.title = TAB_TITLE;
+
+  if (TAB_ICON) {
+    const icon = doc.createElement("link");
+    icon.rel = "icon";
+    icon.href = TAB_ICON;
+    doc.head.appendChild(icon);
+  }
+
+  doc.body.style.margin = "0";
+
+  const frame = doc.createElement("iframe");
+  frame.src = TARGET;
+  frame.allow = "fullscreen; autoplay; clipboard-read; clipboard-write";
+  frame.style.cssText =
+    "position:fixed;top:0;left:0;width:100vw;height:100vh;border:none";
+  doc.body.appendChild(frame);
+
+  if (REDIRECT_THIS_TAB_TO) {
+    window.location.replace(REDIRECT_THIS_TAB_TO);
+  } else {
+    document.getElementById("msg").textContent = "Opened in a new tab. Click to reopen.";
+  }
+}
+
+// Try automatically (most browsers block this), then fall back to a click
+try { launch(); } catch (e) {}
+document.addEventListener("click", launch);
+</script>
+</body>
+</html>
